@@ -1,27 +1,22 @@
 #!/bin/bash -ex 
-#use bash, be verbose
+# use bash, be verbose
 
 myip=$(hostname -I)
+HOSTNAME=zoneminder
 
-#Check for Root
 
-LUID=$(id -u)
-if [[ $LUID -ne 0 ]]; then
-echo "$0 must be run as root"
-exit 1
+# Check for Root
+if [[ $(id -u) -ne 0 ]]; then
+    echo "$0 must be run as root"
+    exit 1
 fi
 
-
-#Set Hostname to zoneminder
-
-HOSTNAME=zoneminder
+# Set Hostname to zoneminder
 echo "$HOSTNAME" > /etc/hostname
 sed -i "s|127.0.1.1 \(.*\)|127.0.1.1 $HOSTNAME|" /etc/hosts
 
-#Install function
-
-install()
-{
+# Install function
+install() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get -y \
         -o DPkg::Options::=--force-confdef \
@@ -29,40 +24,39 @@ install()
         install $@
 }
 
-#Preseed configuration dpkg UNUSED FOR NOW
+# Preseed configuration dpkg UNUSED FOR NOW
 #debconf-set-selections << END
 #[EXAMPLE] sun-java6-jdk shared/accepted-sun-dlj-v1-1 boolean true
 #[EXAMPLE] sun-java6-jre shared/accepted-sun-dlj-v1-1 boolean true
 #[EXAMPLE] sun-java6-bin shared/accepted-sun-dlj-v1-1 boolean true
 #END
 
-#update repos; install from repos
+# update repos; install from repos
 install zoneminder
 
-#floppy link for apache conf for zoneminder
+# floppy link for apache conf for zoneminder
 ln -s /etc/zm/apache.conf /etc/apache2/conf.d/zoneminder.conf
 
-#Restart apache2
+# Restart apache2
 service apache2 restart
 
-#Because Tuxradar says so
+# Because Tuxradar says so
 chmod 4755 /usr/bin/zmfix
 zmfix -a
 adduser www-data video
 
-#function: clean up after apt
-cleanup_apt()
-    {
-        find /var/cache/apt -type f -exec rm -f '{}' +
-    }
+# function: clean up after apt
+cleanup_apt() {
+    find /var/cache/apt -type f -exec rm -f '{}' +
+}
 
-#Clean up after apt
+# Clean up after apt
 cleanup_apt()
 
 #echo "Zoneminder is now available at http://$myip/zm"
 
 
-#PostInstall: dpkg-reconfigure nullmailer
+# PostInstall: dpkg-reconfigure nullmailer
 #Set mysql root user password: mysqladmin -u root password NEWPASSWORD
 #Set zoneminder mysql password: mysqladmin -u admin password NEWPASSWORD
 
