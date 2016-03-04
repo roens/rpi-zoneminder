@@ -45,13 +45,8 @@ chmod 4755 /usr/bin/zmfix
 zmfix -a
 adduser www-data video
 
-# function: clean up after apt
-cleanup_apt() {
-    find /var/cache/apt -type f -exec rm -f '{}' +
-}
-
-# Clean up after apt
-cleanup_apt()
+# clean up after apt
+find /var/cache/apt -type f -exec rm -f '{}' +
 
 #echo "Zoneminder is now available at http://$myip/zm"
 
