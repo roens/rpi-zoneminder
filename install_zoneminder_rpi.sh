@@ -53,9 +53,7 @@ adduser www-data video
 #function: clean up after apt
 cleanup_apt()
     {
-        rm -r /var/cache/apt/*
-        mkdir /var/cache/apt/archives
-        mkdir /var/cache/apt/archives/partial
+        find /var/cache/apt -type f -exec rm -f '{}' +
     }
 
 #Clean up after apt
